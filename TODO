@@ -1,0 +1,77 @@
+TODO									-*- Outline -*-
+
+
+* bugs
+** doesn't run well on IE 
+*** "->string" in test.scm fails
+**** might be solved with use of SPOCK.global, but only tested in full block-mode
+**** also dies when running test-suite
+*** also problems on conkeror on Windows (0.9.3)
+** self-build fails
+*** expand returns impossible values, somethings deeply wrong
+*** recent CPS-fix possibly helps
+** large files seem to exceed function nesting on Rhino
+*** exits 3, SM previously (before CPS clustering) gave "too much recursion"
+*** SM and d8 are ok
+*** seems to be a compile-time error
+
+* test suspensions
+
+* compiler
+** should have access to original variable names
+   keep map of temps -> old names (in state?)
+
+* optimizer
+** lifting may result in colliding names, if multiple compiled modules are loaded
+*** must be renamed or isolated, somehow
+** implement simple inlining of locally bound lambdas
+*** this is just cp
+*** only for small functions (for example expansion of "(match 1 (2 3))")
+
+* upgrade expander to newer version
+** needed?
+
+* count sufficient in user-lambdas?
+** or do we have to count in k-lambdas as well?
+** bug: zero-argument functions will currently not count
+
+* library
+** add section-dependencies
+** error-message will be misleading if primitives require mutable strings but get jstrings
+** put syntax.scm into library.scm ?
+** use case-lambda to specialize single/multiarg variants at expansion time?
+
+* foreign interface
+** passing explicit this (native-method) not really right
+*** perhaps handle %host-ref's in operator position differently?
+    needs to generate direct call
+** needs complete reconsideration
+** "...NAME1.NAME2" could retrieve NAME2 and bind it to NAME1
+*** but would need to check at runtime if NAME2 names a function
+
+* runtime
+** SPOCK.error should split output at newlines and call console.log repeatedly
+*** console.log removes newlines, it seems
+** SPOCK.module is still missing
+
+* option "-namespace"
+** requires "-runtime"?
+** not really tested well
+
+* some dead code is generated after CPS calls
+** currently only in `if' forms and after `%continue'
+
+* egg
+** write documentation page
+
+* MANUAL
+** introduction
+** installation instructions
+** usage
+** standard-deviations
+*** in same order and numbering as in R5RS standard
+** extensions
+** interfacing to JS
+
+* finish Makefile in "stuff/" to have a working test-suite
+

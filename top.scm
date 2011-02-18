@@ -1,0 +1,67 @@
+;;; top.scm - driver for command-line executable
+
+
+(define (option? x)
+  (and (> (string-length x) 0)
+       (char=? #\- (string-ref x 0))))
+
+(define (usage code)
+  (let ((out (if (zero? code) (current-output-port) (current-error-port))))
+    (display "usage: spock OPTION | FILENAME ...\n\n" out)
+    (display "  -source             show source forms\n" out)
+    (display "  -expand             show forms after macro-expansion\n" out)
+    (display "  -canonicalized      show forms after canonicalization\n" out)
+    (display "  -optimized          show forms after optimization\n" out)
+    (display "  -cps                show forms after CPS-conversion\n" out)
+    (display "  -strict             enable strict mode\n" out)
+    (display "  -optimize           enable optimizations\n" out)
+    (display "  -block              enable block-compilation\n" out)
+    (display "  -library-path DIR   add DIR to library path\n" out)
+    (display "  -namespace VAR      put globals into module\n" out)
+    (display "  -xref               show cross-reference\n" out)
+    (display "  -runtime            include runtime-system in generated code\n" out)
+    (display "  -library            compile runtime library\n" out)
+    (display "  -seal               wrap toplevel definitions into local scope\n" out)
+    (display "  -debug              enable debug mode\n" out)
+    (display "  -verbose            show diagnostic messages\n" out)
+    (display "  -import FILENAME    expand syntax in FILENAME\n" out)
+    (display "  -debug-syntax       show debug-output during expansion\n" out)
+    (display "  -o FILENAME         specify output-file\n" out)
+    (exit code)))
+
+(define (run args)
+  (let ((opts '()))
+    (define (add . xs)
+      (set! opts (append opts xs)))
+    (define (option->symbol o)
+      (string->symbol (substring o 1 (string-length o))))
+    (let loop ((args args))
+      (match args
+	(() 
+	 (apply spock 'usage (lambda () (usage 1)) 'fail fail opts))
+	(((or "-h" "-help" "--help") . _)
+	 (usage 0))
+	(("-o" out . more)
+	 (add 'output-file out)
+	 (loop more))
+	(((and o (or "-library-path" "-namespace")) arg . more)
+	 (add (option->symbol o) arg)
+	 (loop more))
+	(((and o (or "-source" "-expand" "-canonicalized" "-cps" "-strict"
+		     "-block" "-xref" "-runtime" "-library"
+		     "-seal" "-debug" "-debug-syntax" "-import" "-verbose"
+		     "-optimize" "-optimized"))
+	  . more)
+	 (add (option->symbol o))
+	 (loop more))
+	(((? option?) . _)
+	 (usage 1))
+	((file . more)
+	 (add file)
+	 (loop more))))))
+
+(cond-expand
+  (spock
+   (define-entry-point (spock_main . args)
+     (run args)))
+  (else))

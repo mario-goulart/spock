@@ -1,0 +1,58 @@
+<!-- test.html - HTML for test-page -->
+
+<html>
+  <head>
+    <script src="spock-runtime-debug-minified.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      function cleanup(str) {
+        return str.replace(new RegExp("<", "g"), "&lt;");
+      }
+
+      function dowrite(str) {
+        var node = document.createElement("span");
+        var lines = str.split("\n");
+        var html;
+
+	if(lines.length == 1) 
+          html = "<tt>" + cleanup(str) + "</tt>";
+	else {
+          html = "<tt>" + cleanup(lines[ 0 ]) + "</tt>";
+
+          for(var i = 1; i < lines.length; ++i)
+            html += "<br/><tt>" + cleanup(lines[ i ]) + "</tt>";
+	}
+
+        node.innerHTML = html;
+        document.body.appendChild(node);
+      }
+
+      function runTests() {
+        if(!("SPOCK" in this)) {
+          setTimeout(runTests, 1000);
+	  return;
+        }
+
+        SPOCK.stdout = new SPOCK.Port("output", { write: dowrite });
+        SPOCK.stdout.name = "document";
+        SPOCK.stderr = SPOCK.stdout;
+        var files = ["library-test-debug.js",
+                     "0001-loop.js", "0002-fac.js", "0003-r4rstest.js", 
+                     "0004-r5rs-pitfalls.js",
+                     "0006-ec-test.js"];
+
+        function chain(i) {
+          if(i >= files.length) dowrite("finished.\n");
+          else {
+            dowrite("\n=================================== " + files[ i ] + "\n");
+            SPOCK.load(files[ i ], function() { chain(i + 1); });
+          }
+        }
+
+        chain(0);
+      }
+    </script>
+  </head>
+  <body onLoad="runTests();">
+  </body>
+</html>

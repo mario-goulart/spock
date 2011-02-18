@@ -1,0 +1,10 @@
+;;;; spock.meta -*- Scheme -*-
+
+
+((synopsis "A compiler and runtime system for R5RS Scheme on top of JavaScript")
+ (depends matchable)
+ (license "BSD")
+ (category web)
+ (hidden)				;XXX
+ (doc-from-wiki)
+ (author "felix winkelmann"))
