@@ -31,7 +31,7 @@
       (lambda ()
 	(display "<script type='text/javascript'>\n")
 	(apply spock
-	       'code x 
+	       'code (strip-syntax x)
 	       'environment (spock-state-mstore state)
 	       (append (spock-state-options state) options))
 	(display "\n</script>\n")))))
