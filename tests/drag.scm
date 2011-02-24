@@ -3,8 +3,10 @@
 
 (define-native-method document.getElementById)
 
-(define (box) (document.getElementById document. "box"))
-(define (info) (document.getElementById document. "info"))
+(define (box) (%inline "document.getElementById" "box"))
+(define (info) (%inline "document.getElementById" "info"))
+
+(define down #f)
 
 (define (mouse-position event)
   (values 
@@ -12,10 +14,12 @@
    (- (+ (.clientY event) document.body.scrollTop) document.body.clientTop)))
 
 (define (mouse-move event)
-  (call-with-values (cut mouse-position event)
-    (lambda (x y)
-      (move-element (box) x y)
-      (show-position x y))))
+  (let ((event (if (void? event) window.event event)))
+    (when down
+      (call-with-values (cut mouse-position event)
+	(lambda (x y)
+	  (move-element (box) x y)
+	  (show-position x y))))))
 
 (define (move-element elt x y)
   (set! (.style.left elt) x)
@@ -38,3 +42,5 @@
       (number->string x) "/" (number->string y)))))
 
 (set! document.onmousemove (callback mouse-move))
+(set! document.onmousedown (callback (lambda () (set! down #t))))
+(set! document.onmouseup (callback (lambda () (set! down #f))))
