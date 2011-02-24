@@ -36,6 +36,7 @@
   (display "  'verbose             show diagnostic messages\n")
   (display "  'prepare             just prepare state without compiling\n")
   (display "  'code EXP            code to be compiled instead of file\n")
+  (display "  'bind FILENAME       generate bindings from specifications\n")
   (display "  'output-file FILENAME   specify output-file\n"))
 
 (define (spock . args)
@@ -55,6 +56,7 @@
 	(xref-mode default-xref-mode)
 	(verbose-mode #f)
 	(debug-syntax #f)
+	(bindings '())
 	(fail error)
 	(namespace #f)
 	(imports '())
@@ -198,6 +200,10 @@
 		   (sexpand (read-library state "syntax.scm") #f)
 		   (sexpand (read-library state "library.scm") #f))
 		 (for-each
+		  (lambda (bound)
+		    (sexpand (parse-bindings (read-contents bound)) #t))
+		  (reverse bindings))
+		 (for-each
 		  (lambda (file) (sexpand (read-forms file) #t))
 		  (reverse imports))
 		 (if prepare
@@ -239,6 +245,9 @@
 	    (loop more))
 	   (('import filename . more)
 	    (set! imports (cons filename imports))
+	    (loop more))
+	   (('bind arg . more)
+	    (set! bindings (cons arg bindings))
 	    (loop more))
 	   (('library-path)
 	    (return library-path))

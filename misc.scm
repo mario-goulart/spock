@@ -164,3 +164,14 @@
 	  '())
       args)))
   x)
+
+(define (read-contents filename)
+  (with-input-from-file filename
+    (lambda ()
+      (with-output-to-string
+	(lambda ()
+	  (let loop ()
+	    (let ((c (read-char)))
+	      (unless (eof-object? c)
+		(write-char c)
+		(loop)))))))))

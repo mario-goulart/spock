@@ -19,6 +19,8 @@
 (include "core")
 (include "opt")
 (include "xref")
+(include "honu")
+(include "bind")
 (include "sections")
 (include "spock/library")
 (include "driver")

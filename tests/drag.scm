@@ -1,8 +1,6 @@
 ;;;; drag.scm
 
 
-(define-native-method document.getElementById)
-
 (define (box) (%inline "document.getElementById" "box"))
 (define (info) (%inline "document.getElementById" "info"))
 

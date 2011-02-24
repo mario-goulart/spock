@@ -26,6 +26,7 @@
     (display "  -verbose            show diagnostic messages\n" out)
     (display "  -import FILENAME    expand syntax in FILENAME\n" out)
     (display "  -debug-syntax       show debug-output during expansion\n" out)
+    (display "  -bind FILENAME      generate bindings for specifications in FILENAME\n" out)
     (display "  -o FILENAME         specify output-file\n" out)
     (exit code)))
 
@@ -46,7 +47,7 @@
 	 (loop more))
 	(("-library-path")
 	 (print (car (spock 'library-path))))
-	(((and o (or "-library-path" "-namespace")) arg . more)
+	(((and o (or "-library-path" "-namespace" "-bind")) arg . more)
 	 (add (option->symbol o) arg)
 	 (loop more))
 	(((and o (or "-source" "-expand" "-canonicalized" "-cps" "-strict"
