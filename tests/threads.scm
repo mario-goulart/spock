@@ -37,9 +37,9 @@
 (define canvas (%inline "document.getElementById" "canvas"))
 (define ctx (%inline ".getContext" canvas "2d"))
 
-(%property-set! "lineWidth" ctx 5)
-(%property-set! "lineStyle" ctx "rgb(0, 0, 255)")
-(%property-set! "fillStyle" ctx "rgb(255, 200, 255)")
+(set! (.lineWidth ctx) 5)
+(set! (.lineStyle ctx) "rgb(0, 0, 255)")
+(set! (.fillStyle ctx) "rgb(255, 200, 255)")
 
 (%inline ".fillRect" ctx 0 0 600 600)
 

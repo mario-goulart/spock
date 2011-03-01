@@ -15,11 +15,15 @@ TODO									-*- Outline -*-
 *** SM and d8 are ok
 *** seems to be a compile-time error
 
+* use jsmin egg instead of jsmin.c
+
 * test suspensions
 
 * compiler
 ** should have access to original variable names
    keep map of temps -> old names (in state?)
+** threads.scm slightly broken
+*** inner loop creating threads mutates captured variable
 
 * optimizer
 ** lifting may result in colliding names, if multiple compiled modules are loaded
@@ -48,7 +52,7 @@ TODO									-*- Outline -*-
 ** needs complete reconsideration
 ** "...NAME1.NAME2" could retrieve NAME2 and bind it to NAME1
 *** but would need to check at runtime if NAME2 names a function
-** integrate bind.scm into compiler
+** test -bind
 
 * runtime
 ** SPOCK.error should split output at newlines and call console.log repeatedly
@@ -63,4 +67,3 @@ TODO									-*- Outline -*-
 ** currently only in `if' forms and after `%continue'
 
 * finish Makefile in "stuff/" to have a working test-suite
-
