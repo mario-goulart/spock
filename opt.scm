@@ -200,7 +200,7 @@
 	    (x2 _ xse) (walk x e #f loc)
 	    (result 
 	     (y2 _ yse) (walk y e p loc)
-	     (return `(%property-set! ,p ,x2 ,y2) #f (or xse yse debug)))))
+	     (return `(%property-set! ,p ,x2 ,y2) #f #t))))
 	  ;;
 	  (('%code . code)
 	   (return form #f #t))

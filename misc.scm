@@ -94,18 +94,6 @@
 	(car lst)
 	(loop (cdr lst)))))
 
-(define (every pred lst)
-  (let loop ((lst lst))
-    (cond ((null? lst))
-	  ((not (pred (car lst))) #f)
-	  (else (loop (cdr lst))))))
-
-(define (any pred lst)
-  (let loop ((lst lst))
-    (cond ((null? lst) #f)
-	  ((pred (car lst)) => (lambda (x) x))
-	  (else (loop (cdr lst))))))
-
 (define (test-option opt state)
   (cond ((assq opt state) => cdr)
 	(else #f)))
