@@ -46,7 +46,7 @@ TODO									-*- Outline -*-
 ** use case-lambda to specialize single/multiarg variants at expansion time?
 
 * foreign interface
-** passing explicit this (native-method) not really right
+** passing explicit "this" (native-method) not really right
 *** perhaps handle %host-ref's in operator position differently?
     needs to generate direct call
 ** needs complete reconsideration

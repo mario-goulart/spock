@@ -170,6 +170,7 @@
 	 `(let ((%unused ,(walk x1 e #f #f)))
 	    ,(walk `(begin ,@more) e tail ldest)))
 	(('lambda llist body ...)
+	 (set! looping #f)
 	 (match-let (((vars rest) (parse-llist llist)))
 	   (let* ((aliases (map (lambda (v) (cons v (temp))) vars))
 		  (newllist
@@ -179,10 +180,10 @@
 			(cdr (assq rest aliases))
 			'()))))
 	     `(lambda ,newllist
-		,(fluid-let ((looping 'maybe))
+		,(fluid-let ((looping #t))
 		   ;; walking body checks for self-call in tail-pos. and sets `looping'
 		   (let ((body (walk `(begin ,@body) (append aliases e) #t ldest)))
-		     (if (eq? #t looping)
+		     (if looping
 			 `(%loop ,newllist ,body)
 			 body)))))))
 	(('define v x)
@@ -194,7 +195,6 @@
 	;;XXX we actually have to check `op' for not being a special form name
 	((op args ...)
 	 (cond ((and tail (symbol? op) (eq? op ldest)) ; tail + self call?
-		(set! looping (eq? 'maybe looping))
 		`(%continue ,@(map (cut walk <> e #f #f) x)))
 	       (else
 		(set! looping #f)

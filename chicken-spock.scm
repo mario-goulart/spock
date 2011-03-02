@@ -10,6 +10,8 @@
 
 (include "top.scm")
 
+(set! ##sys#warnings-enabled #f)	; disable reader warnings
+
 (run (command-line-arguments))
 
 )
