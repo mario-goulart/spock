@@ -46,7 +46,7 @@
 (define halt #f)
 (define threads '())
 
-(let* ((n 4)
+(let* ((n 3)
        (wh (/ 600 n)))
   (do ((x 1 (+ x 1)))
       ((> x n))
@@ -58,7 +58,7 @@
 	    (cons 
 	     (lambda () 
 	       ;;(%inline "console.log" cx cy)
-	       (spiral ctx cx cy (/ wh 2) 200 4 (%inline "Math.random")))
+	       (spiral ctx cx cy (/ wh 2) 100 4 (%inline "Math.random")))
 	     threads)))))))
 
 (define current threads)
@@ -69,7 +69,7 @@
      (set-car! current (lambda () (k #f)))
      (set! current (cdr current))
      (when (null? current) (set! current threads))
-     (%inline "setTimeout" (callback (lambda () ((car current)))) 1)
+     (%inline "setTimeout" (callback (lambda () ((car current)))) 10)
      (halt))))
 
 (call-with-current-continuation

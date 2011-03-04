@@ -1507,12 +1507,14 @@
 	   "SPOCK.stderr = state[ 4 ];"
 	   "return (state[ 0 ])(undefined);")) ; drops K
 	
+	;;XXX currently undocumented and untested
 	(define (suspend proc)
 	  (%call-with-current-continuation
 	   (lambda (k)
 	     (proc (%get-context k))
 	     ((%native-lambda "throw new SPOCK.Result(undefined);")))))
 
+	;;XXX currently undocumented and untested
 	(define-inline (resume state)
 	  (%restore-context state))
 

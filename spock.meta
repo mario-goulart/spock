@@ -5,6 +5,7 @@
  (depends matchable)
  (license "BSD")
  (category web)
- (hidden)				;XXX
+ (depends jsmin)
  (doc-from-wiki)
+ (hidden)
  (author "felix winkelmann"))
