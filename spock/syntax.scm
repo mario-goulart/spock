@@ -69,7 +69,7 @@
     ((_ name x)
      (begin
        (define name x)
-       (%host-set! 'name (callback name))))))
+       (define (%host-set! 'name (callback name)))))))
 
 (define-syntax-rule (define-native name ...)
   (begin
