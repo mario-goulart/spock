@@ -7,3 +7,13 @@
 
 (display (<script-header> debug: #t))
 (display #`(print #^(+ 3 4)))
+
+(print "\nUsing `bind':\n")
+(spock 'bind "test-bind.js"
+       'code '(begin 
+		(print ($ "abc"))
+		(print (Math.sin 42))
+		(print (gurgle (vector "yes" "no") 1))
+		(print yes)
+		(set! one.two "ok")))
+

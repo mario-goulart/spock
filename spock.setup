@@ -53,9 +53,9 @@
  'spock
  '("spock.so" "spock" "spock.import.so"
    "spock-compiler.so" "spock-compiler.import.so")
- '((version 0.1)))
+ '((version 0.01)))
 
 (install-program
  'chicken-spock
  '("chicken-spock")
- '((version 0.1)))
+ '((version 0.01)))

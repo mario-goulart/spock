@@ -35,6 +35,7 @@ SPOCK.String = function(chars) {
 	this.parts = [chars];
 	this.length = chars.length;
     }
+    else if(typeof chars === "number") this.parts = [chars.toString()];
     else this.parts = chars;	// assumes chars is array
 };
 
@@ -183,7 +184,7 @@ SPOCK.String.prototype.normalize = function() {
 SPOCK.jstring = function(x) {
     if(typeof x === "string") return x;
     else if(x instanceof SPOCK.String) return x.normalize();
-    else SPOCK.error("bad argument type - not a string", x);
+    else return x;
 };
 
 SPOCK.list = function() {

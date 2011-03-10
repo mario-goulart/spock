@@ -138,7 +138,7 @@
 		     (cons
 		      (read-library state "library.scm" (lambda (x) x))
 		      files)))
-		 (when (and (not prepare) (null? files) (not code))
+		 (when (and (not prepare) (null? files) (not code) (null? bindings))
 		   (fail "nothing to compile"))
 		 (when (not mstore-given)
 		   (sexpand
@@ -201,17 +201,22 @@
 		   (sexpand (read-library state "library.scm") #f))
 		 (for-each
 		  (lambda (bound)
-		    (sexpand (parse-bindings (read-contents bound)) #t))
+		    (let ((bs (parse-bindings (read-contents bound))))
+		      (if (and (null? files) (not code))
+			  (pp bs)
+			  (sexpand bs #t))
+		      bs))
 		  (reverse bindings))
 		 (for-each
 		  (lambda (file) (sexpand (read-forms file) #t))
 		  (reverse imports))
 		 (if prepare
 		     mstore
-		     (if output-file
-			 (with-output-to-file output-file
-			   (cut compile-files state files show))
-			 (compile-files state files show)))))
+		     (when (pair? files)
+		       (if output-file
+			   (with-output-to-file output-file
+			     (cut compile-files state files show))
+			   (compile-files state files show))))))
 	   (('help . _)
 	    (spock-help))
 	   (('output-file out . more)
