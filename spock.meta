@@ -2,9 +2,8 @@
 
 
 ((synopsis "A compiler and runtime system for R5RS Scheme on top of JavaScript")
- (depends matchable)
  (license "BSD")
  (category web)
- (depends jsmin)
+ (depends jsmin matchable)
  (doc-from-wiki)
  (author "felix winkelmann"))
