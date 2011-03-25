@@ -6,4 +6,5 @@
  (category web)
  (depends jsmin matchable)
  (doc-from-wiki)
- (author "felix winkelmann"))
+ (author "felix winkelmann")
+ (files "runtime.js" "top.scm" "spock-compiler.scm" "TODO" "opt.scm" "bind.scm" "expand.scm" "driver.scm" "core.scm" "spock.meta" "spock-module.scm" "spock.release-info" "misc.scm" "spock/match.scm" "spock/syntax.scm" "spock/library.scm" "spock.setup" "config.scm" "xref.scm" "chicken-spock.scm" "debug.js" "codegen.scm" "sections.scm" "tests/test-bind.js" "tests/run.scm" "tests/threads.html" "tests/drag.html" "tests/threads.scm" "tests/drag.scm" "config.js" "honu.scm"))
