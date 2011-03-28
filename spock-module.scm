@@ -1,9 +1,9 @@
 ;;;; spock-module.scm - read-syntax and programming interface
 
 
-(module spock (<script-header>
+(module spock (<spock-header>
 	       spock-script
-	       <script>)
+	       <spock>)
 
 (import scheme chicken)
 (use matchable ports)
@@ -12,7 +12,7 @@
 
 
 ;;
-(define (<script-header> #!key (minified #t) debug path)
+(define (<spock-header> #!key (minified #t) debug path)
   (string-append
    "<script type='text/javascript' src='"
    (if path (string-append path "/") "")
@@ -37,7 +37,7 @@
 	(display "\n</script>\n")))))
 
 ;;
-(define-syntax (<script> x r c)
+(define-syntax (<spock> x r c)
   (let ((%cons (r 'cons))
 	(%append (r 'append))
 	(%list->vector (r 'list->vector))
@@ -46,12 +46,12 @@
       (cond ((pair? x)
 	     (cond ((and (symbol? (car x)) 
 			 (= (length x) 2)
-			 (eq? '<unscript> (strip-syntax (car x))))
+			 (eq? '<unquote> (strip-syntax (car x))))
 		    (cadr x))
 		   ((and (pair? (car x))
 			 (symbol? (caar x))
 			 (= (length (car x)) 2)
-			 (eq? '<unscript-splicing> (strip-syntax (caar x))))
+			 (eq? '<unquote-splicing> (strip-syntax (caar x))))
 		    `(,%append (cadar x) ,(unq (cdr x))))
 		   (else `(,%cons ,(unq (car x)) ,(unq (cdr x)))))) ;XXX could be improved
 	    ((vector? x)
@@ -65,14 +65,14 @@
 (set-sharp-read-syntax!
  #\`
  (lambda (port)
-   `(<script> ,(read port))))
+   `(<spock> ,(read port))))
 
 (set-sharp-read-syntax!
  #\^
  (lambda (port)
    (cond ((eqv? (peek-char port) #\@)
 	  (read-char port)
-	  `(<unscript-splicing> ,(read port)))
-	 (else `(<unscript> ,(read port))))))
+	  `(<unquote-splicing> ,(read port)))
+	 (else `(<unquote> ,(read port))))))
 
 )

@@ -5,7 +5,7 @@
 
 (print "\nGenerating some trivial JS:\n")
 
-(display (<script-header> debug: #t))
+(display (<spock-header> debug: #t))
 (display #`(print #^(+ 3 4)))
 
 (print "\nUsing `bind':\n")
@@ -16,4 +16,3 @@
 		(print (gurgle (vector "yes" "no") 1))
 		(print yes)
 		(set! one.two "ok")))
-

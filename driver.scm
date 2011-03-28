@@ -212,11 +212,10 @@
 		  (reverse imports))
 		 (if prepare
 		     mstore
-		     (when (pair? files)
-		       (if output-file
-			   (with-output-to-file output-file
-			     (cut compile-files state files show))
-			   (compile-files state files show))))))
+		     (if output-file
+			 (with-output-to-file output-file
+			   (cut compile-files state files show))
+			 (compile-files state files show)))))
 	   (('help . _)
 	    (spock-help))
 	   (('output-file out . more)
