@@ -52,10 +52,8 @@
 (install-extension
  'spock
  '("spock.so" "spock" "spock.import.so"
-   "spock-compiler.so" "spock-compiler.import.so")
- '((version 0.02)))
+   "spock-compiler.so" "spock-compiler.import.so"))
 
 (install-program
  'chicken-spock
- '("chicken-spock")
- '((version 0.02)))
+ '("chicken-spock"))
