@@ -5,6 +5,7 @@
 
 
 (define (cat out . files)
+  (print "  cat " (string-intersperse files) " > " out)
   (with-output-to-file out
     (lambda ()
       (for-each

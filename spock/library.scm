@@ -86,7 +86,7 @@
 
 	(define values
 	  (%native-lambda
-	   "return K.apply(this, Array.prototype.slice.call(arguments, 1));"))
+	   "return K.apply(SPOCK.global, Array.prototype.slice.call(arguments, 1));"))
 
 	(define call-with-values
 	  (%native-lambda
@@ -95,7 +95,7 @@
 	   "function k2() {"
 	   " var args = Array.prototype.slice.call(arguments);"
 	   " args.unshift(K);"
-	   " return proc.apply(this, args);}"
+	   " return proc.apply(SPOCK.global, args);}"
 	   "return thunk(k2);"))
 
 	))
@@ -111,7 +111,7 @@
 	   "var t1 = arguments[ 1 ];"
 	   "var t2 = arguments[ 2 ];"
 	   "var args;"
-	   "function k2() { return K.apply(this, args); }"
+	   "function k2() { return K.apply(SPOCK.global, args); }"
 	   "function k1() {"
 	   " args = Array.prototype.slice.call(arguments);"
 	   " return t2(k2);}"
@@ -573,11 +573,11 @@
 
        (define %max
 	 (%native-lambda
-	  "return K(Math.max.apply(this, arguments));"))
+	  "return K(Math.max.apply(SPOCK.global, arguments));"))
 
        (define %max
 	 (%native-lambda
-	  "return K(Math.min.apply(this, arguments));"))
+	  "return K(Math.min.apply(SPOCK.global, arguments));"))
 
 	))
 
@@ -1370,7 +1370,7 @@
 	   " for(var i = 0; lst instanceof SPOCK.Pair; lst = lst.cdr)"
 	   "  vec2[ i++ ] = lst.car;"
 	   " vec = vec.concat(vec2);}"
-	   "return proc.apply(this, vec);"))
+	   "return proc.apply(SPOCK.global, vec);"))
 
 	(define (for-each proc lst1 . lsts)
 	  (if (null? lsts)
@@ -1456,7 +1456,7 @@
 	  (%native-lambda
 	   "var proc = arguments[ 1 ];"
 	   "function cont() {"
-	   " return K.apply(this, Array.prototype.slice.call(arguments, 1));}"
+	   " return K.apply(SPOCK.global, Array.prototype.slice.call(arguments, 1));}"
 	   "return proc(K, cont);"))
 
 	(define call-with-current-continuation
@@ -1865,7 +1865,7 @@
 	;; (%error MESSAGE ARGUMENTS ...)
 	(define %error
 	  (%native-lambda
-	   "SPOCK.error.apply(this, Array.prototype.slice.call(arguments, 1));"))
+	   "SPOCK.error.apply(SPOCK.global, Array.prototype.slice.call(arguments, 1));"))
 
 	(define error %error)
 
@@ -1927,7 +1927,7 @@
 	   "var func = arguments[ 1 ];"
 	   "return K(function(k) {"
 	   " var args = Array.prototype.splice.call(arguments, 1);"
-	   " return k(func.apply(this, args));});"))
+	   " return k(func.apply(SPOCK.global, args));});"))
 
 	(define native-method
 	  (%native-lambda

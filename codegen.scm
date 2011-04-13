@@ -86,7 +86,8 @@
 	 (let ((t1 (temp)))
 	   (match-let (((vars rest) (parse-llist llist)))
 	     (emit nl "var " t1 " = function " 
-		   (if (and debug-mode dest) (identifier dest) "") "(")
+		   ;(if (and debug-mode dest) (identifier dest) "")  <- gives trouble on IE
+		   "(")
 	     (emit-list vars)
 	     (emit ") {")
 	     (indent 
