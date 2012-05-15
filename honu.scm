@@ -83,7 +83,7 @@
 		      ((#\() (read-char port) (read-sequence '%parens #\)))
 		      ((#\[) (read-char port) (read-sequence '%brackets #\]))
 		      ((#\{) (read-char port) (read-sequence '%braces #\}))
-		      ((#\) #\] #\}) (err (string-append "unexpected closing delimiter" c)))
+		      ((#\) #\] #\}) (err "unexpected closing delimiter" c))
 		      (else
 		       (cond ((char-numeric? c) (read-num))
 			     ((or (char-alphabetic? c) 
