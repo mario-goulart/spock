@@ -1,7 +1,7 @@
 ;;;; spock.setup - setup-script for SPOCK on CHICKEN -*- Scheme -*-
 
 
-(use utils jsmin)
+(use utils jsmin make)
 
 
 (define (cat out . files)
@@ -16,39 +16,56 @@
   (with-output-to-file to
     (cut display (jsmin-file from))))
 
-(make (("spock-compiler.so" ("spock-compiler.scm"
-			     "misc.scm" "expand.scm" "core.scm" "opt.scm" "xref.scm"
-			     "sections.scm" "spock/library.scm" 
-			     "driver.scm" "codegen.scm")
-	(compile -sS spock-compiler.scm -O3 -d1 -J -o spock-compiler.so))
-       ("spock.so" ("spock-module.scm" "spock-compiler.import.so")
-	(compile -sS spock-module.scm -O3 -d1 -J -o spock.so))
-       ("spock.import.so" ("spock.so")
-	(compile -s -O3 -d0 spock.import.scm))
-       ("spock-compiler.import.so" ("spock-compiler.so")
-	(compile -s -O3 -d0 spock-compiler.import.scm))
-       ("chicken-spock" ("chicken-spock.scm" "top.scm" "spock.so" "spock-compiler.import.so")
-	(compile -S -O3 -d0 -feature standalone chicken-spock.scm -o chicken-spock))
-       ("spock/spock-runtime.js" ("config.js" "runtime.js" "library.js")
-	(cat "spock/spock-runtime.js" "config.js" "runtime.js" "library.js"))
-       ("spock/spock-runtime-debug.js" 
-	("config.js" "runtime.js" "debug.js" "library-debug.js")
-	(cat "spock/spock-runtime-debug.js"
-	     "config.js" "runtime.js" "debug.js" "library-debug.js"))
-       ("spock/spock-runtime-min.js" ("spock/spock-runtime.js")
-	(jsmin "spock/spock-runtime.js" "spock/spock-runtime-min.js"))
-       ("spock/spock-runtime-debug-min.js" ("spock/spock-runtime-debug.js")
-	(jsmin "spock/spock-runtime-debug.js" "spock/spock-runtime-debug-min.js"))
-       ("library.js" ("spock/library.scm" "chicken-spock")
-	(run (./chicken-spock -library-path spock -optimize -library -o library.js)))
-       ("library-debug.js" ("spock/library.scm" "chicken-spock")
-	(run (./chicken-spock -library-path spock -optimize -debug -library 
-			      -o library-debug.js))))
-  '("spock.so" "spock.import.so"
-    "spock-compiler.so" "spock-compiler.import.so"
-    "chicken-spock"
-    "spock/spock-runtime.js" "spock/spock-runtime-debug.js"
-    "spock/spock-runtime-min.js" "spock/spock-runtime-debug-min.js"))
+(define executable 
+  (cond-expand
+    (windows "chicken-spock.exe")
+    (else "chicken-spock")))
+
+(make/proc (list (list "spock-compiler.so" 
+		       '("spock-compiler.scm"
+			 "misc.scm" "expand.scm" "core.scm" "opt.scm" "xref.scm"
+			 "sections.scm" "spock/library.scm" 
+			 "driver.scm" "codegen.scm")
+		       (lambda ()
+			 (compile -sS spock-compiler.scm -O3 -d1 -J -o spock-compiler.so)))
+		 (list "spock.so" '("spock-module.scm" "spock-compiler.import.so")
+		       (lambda ()
+			 (compile -sS spock-module.scm -O3 -d1 -J -o spock.so)))
+		 (list "spock.import.so" '("spock.so")
+		       (lambda ()
+			 (compile -s -O3 -d0 spock.import.scm)))
+		 (list "spock-compiler.import.so" '("spock-compiler.so")
+		       (lambda () (compile -s -O3 -d0 spock-compiler.import.scm)))
+		 (list "chicken-spock" 
+		       '("chicken-spock.scm" "top.scm" "spock.so" "spock-compiler.import.so")
+		       (lambda ()
+			 (compile -S -O3 -d0 -feature standalone chicken-spock.scm -o chicken-spock)))
+		 (list "spock/spock-runtime.js" '("config.js" "runtime.js" "library.js")
+		       (lambda ()
+			 (cat "spock/spock-runtime.js" "config.js" "runtime.js" "library.js")))
+		 (list "spock/spock-runtime-debug.js" 
+		       '("config.js" "runtime.js" "debug.js" "library-debug.js")
+		       (lambda () (cat "spock/spock-runtime-debug.js"
+				       "config.js" "runtime.js" "debug.js"
+				       "library-debug.js")))
+		 (list "spock/spock-runtime-min.js" '("spock/spock-runtime.js")
+		       (lambda ()
+			 (jsmin "spock/spock-runtime.js" "spock/spock-runtime-min.js")))
+		 (list "spock/spock-runtime-debug-min.js" '("spock/spock-runtime-debug.js")
+		       (lambda ()
+			 (jsmin "spock/spock-runtime-debug.js" "spock/spock-runtime-debug-min.js")))
+		 (list "library.js" '("spock/library.scm" "chicken-spock")
+		       (lambda ()
+			 (run (./chicken-spock -library-path spock -optimize -library -o library.js))))
+		 (list "library-debug.js" '("spock/library.scm" "chicken-spock")
+		       (lambda ()
+			 (run (./chicken-spock -library-path spock -optimize -debug -library 
+					       -o library-debug.js)))))
+	   (cons executable
+		 '("spock.so" "spock.import.so"
+		   "spock-compiler.so" "spock-compiler.import.so"
+		   "spock/spock-runtime.js" "spock/spock-runtime-debug.js"
+		   "spock/spock-runtime-min.js" "spock/spock-runtime-debug-min.js")))
 
 (install-extension
  'spock

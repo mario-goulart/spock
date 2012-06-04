@@ -1784,8 +1784,9 @@
 		    (if (eof-object? c)
 			(%error "unexpected EOF after `#'")
 			(case c
+			  ((#\t #\T) #t)
+			  ((#\f #\F) #f)
 			  ((#\() (list->vector (read-list #\))))
-			  ((#\;) (read1) (read))
 			  ((#\% #\!) (string->symbol (read-token (list c #\#))))
 			  ((#\\) 
 			   (let ((t (read-token '())))
