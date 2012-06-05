@@ -58,7 +58,7 @@
 		 (list "library.js" (list "spock/library.scm" executable)
 		       (lambda ()
 			 (run (./chicken-spock -library-path spock -optimize -library -o library.js))))
-		 (list "library-debug.js" (list "spock/library.scm" ,executable)
+		 (list "library-debug.js" (list "spock/library.scm" executable)
 		       (lambda ()
 			 (run (./chicken-spock -library-path spock -optimize -debug -library 
 					       -o library-debug.js)))))
@@ -71,8 +71,10 @@
 (install-extension
  'spock
  '("spock.so" "spock" "spock.import.so"
-   "spock-compiler.so" "spock-compiler.import.so"))
+   "spock-compiler.so" "spock-compiler.import.so")
+ '((version 0.08)))
 
 (install-program
  'chicken-spock
- '("chicken-spock"))
+ (list executable)
+ '((version 0.08)))
