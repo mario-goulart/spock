@@ -72,9 +72,9 @@
  'spock
  '("spock.so" "spock" "spock.import.so"
    "spock-compiler.so" "spock-compiler.import.so")
- '((version 0.08)))
+ '((version 0.09)))
 
 (install-program
  'chicken-spock
  (list executable)
- '((version 0.08)))
+ '((version 0.09)))

@@ -254,12 +254,14 @@ SPOCK.equalp = function(x, y) {
 
 SPOCK.count = function(args, loc) {
     if(--SPOCK.stack <= 0) 
-	throw new SPOCK.Continuation(args.callee, Array.prototype.slice.call(args));
+	return new SPOCK.Continuation(args.callee, Array.prototype.slice.call(args));
+    else return false;
 };
 
 SPOCK.rest = function(args, count, loc) {
     var rest = null;
-
+    
+    // this will not unwind, but decrease the counter
     SPOCK.count(args, loc);
 
     for(var i = args.length - 1; i >= count; --i)
@@ -272,7 +274,7 @@ SPOCK.statistics = function() {};
 
 SPOCK.run = function(func) {	// optional arguments
     function terminate(result) {
-	throw new SPOCK.Result(result);
+	return new SPOCK.Result(result);
     }
 
     var k = terminate;
@@ -303,28 +305,23 @@ SPOCK.run = function(func) {	// optional arguments
     }
 
     while(true) {
-	try {
-	    result = func.apply(SPOCK.global, args);
-	    break;
+	result = func.apply(SPOCK.global, args);
+
+	if(result instanceof SPOCK.Continuation) {
+	    SPOCK.stack = SPOCK.STACKSIZE;
+	    func = result.k_callee;
+	    args = result.k_arguments;
 	}
-	catch(x) {
-	    if(x instanceof SPOCK.Continuation) {
-		SPOCK.stack = SPOCK.STACKSIZE;
-		func = x.k_callee;
-		args = x.k_arguments;
-	    }
-	    else if(x instanceof SPOCK.Result) {
-		result = x.value;
-		break;
-	    }
-	    else {
-		restore();
-		SPOCK.error(x);
-	    }
+	else if(result instanceof SPOCK.Result) {
+	    restore();
+	    return result.value;
+	}
+	else {
+	    restore();
+	    SPOCK.error("unexpected return of non-continuation", result);
 	}
     }
 
-    restore();
     return result;
 };
 

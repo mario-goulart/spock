@@ -1512,7 +1512,7 @@
 	  (%call-with-current-continuation
 	   (lambda (k)
 	     (proc (%get-context k))
-	     ((%native-lambda "throw new SPOCK.Result(undefined);")))))
+	     ((%native-lambda "return new SPOCK.Result(undefined);")))))
 
 	;;XXX currently undocumented and untested
 	(define-inline (resume state)

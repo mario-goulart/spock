@@ -40,10 +40,12 @@ SPOCK.error = function(msg) {	// "msg" may be a string or an error object
 SPOCK.count = function(args, loc) {
     if(--SPOCK.stack <= 0) {
 	++SPOCK.restartCount;
-	throw new SPOCK.Continuation(args.callee, Array.prototype.slice.call(args));
+	return new SPOCK.Continuation(args.callee, Array.prototype.slice.call(args));
     }
 
     if(loc) SPOCK.trace(loc, args);
+
+    return false;
 };
 
 SPOCK.trace = function(name, args) {

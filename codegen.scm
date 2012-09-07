@@ -94,11 +94,12 @@
 	      (lambda ()
 		(when dest (emit "\t// " dest))
 		(when (and (pair? llist) (pair? (cdr llist))) ;XXX not really correct
-		  (emit nl "SPOCK.count(arguments" 
+		  (emit nl "var r = SPOCK.count(arguments" 
 			(if (and debug-mode dest)
 			    (string-append ", " (constant (stringify dest)))
 			    "")
-			");"))
+			");")
+		  (emit nl "if(r) return r;"))
 		(when rest
 		  (emit nl "var " rest " = SPOCK.rest(arguments, "  (- (length vars) 1))
 		  (when (and debug-mode dest)
@@ -176,6 +177,7 @@
 	   (emit nl "var " t " = function(K) {")
 	   (indent
 	    (lambda ()
+	      ;;XXX this will not unwind, but at least decrease the counter
 	      (emit nl "SPOCK.count(arguments")
 	      (if dest
 		  (emit ", '" dest "');")

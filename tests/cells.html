@@ -1,0 +1,33 @@
+<html>
+<head>
+  <script src="spock-runtime-debug.js"></script>
+  <script src="srfi-25.js"></script>
+  <script type="text/javascript">
+
+var cells = new Array(900);
+var col = true;
+
+function create() {
+for(x = 0; x < 30; ++x) {
+    for(y = 0; y < 30; ++y) {
+	var c = document.createElement("div");
+	cells[ y * 10 + x ] = c;
+        c.style.left = (50 + x * 5) + "px";
+        c.style.top = (50 + y * 5) + "px";
+        c.style.backgroundColor = col ? "red" : "green";
+        c.style.position = "absolute";
+        c.style.width = 5;
+        c.style.height = 5;
+        col = !col;
+	document.body.appendChild(c);
+    }
+}
+}
+
+setTimeout(create, 1000);
+
+</script>
+</head>
+<body style="background-color: #ffffff;">
+</body>
+</html>
