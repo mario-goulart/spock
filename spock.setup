@@ -24,7 +24,7 @@
 (make/proc (list (list "spock-compiler.so" 
 		       '("spock-compiler.scm"
 			 "misc.scm" "expand.scm" "core.scm" "opt.scm" "xref.scm"
-			 "sections.scm" "spock/library.scm" 
+			 "sections.scm" "spock/library.scm" "bind.scm"
 			 "driver.scm" "codegen.scm")
 		       (lambda ()
 			 (compile -sS spock-compiler.scm -O3 -d1 -J -o spock-compiler.so)))
@@ -72,9 +72,9 @@
  'spock
  '("spock.so" "spock" "spock.import.so"
    "spock-compiler.so" "spock-compiler.import.so")
- '((version 0.09)))
+ '((version 0.091)))
 
 (install-program
  'chicken-spock
  (list executable)
- '((version 0.09)))
+ '((version 0.091)))

@@ -14,6 +14,17 @@
 
 ;; needs honu.scm and match.scm
 
+(define (method-name? str)
+  (and (memv #\. (string->list str)) #t))
+
+(define (method-name-split str)
+  (if (char-upper-case? (string-ref str 0))
+      str
+      (let ((res (string-split str ".")))
+         (if (= (length res) 1)
+             (car res)
+             (list (car res) (foldl (cut string-append <> "." <>)
+                                    "" (cdr res)))))))
 
 (define parse-bindings 
   (let ((semicolon (string->symbol ";"))
@@ -106,57 +117,64 @@
 ;; during canonicalization
 (define (generate-function-binding name tl)
   ;;XXX doesn't handle methods (do we need to?)
-  (define (finish wraps tmps rest rtmp)
-    `(define-syntax ,(string->symbol name)
-       (syntax-rules ()
-	 ((_ ,@tmps ,@(if rest (list rtmp '...) '()))
-	  (%inline 
-	   ,name ,@wraps
-	   ,@(cond ((eq? #t rest) (list rtmp '...))
-		   (rest (list rest '...))
-		   (else '())))))))	  
-  (define (wrap type tmp)
-    (case type
-      ((number function object null undefined)
-       `(%check ,(symbol->string type) ,tmp))
-      ((string)
-       `(%string->jstring ,tmp))
-      (else
-       (if (pair? type)
-	   (wrap-vector type tmp)
-	   tmp))))
-  (define (wrap-vector tl tmp)
-    (let loop ((tl tl) (cs '()) (f #f) (i 0))
+  (let ((name (method-name-split name)))
+    (define (finish wraps tmps rest rtmp)
+      (let ((sname
+	     (if (string? name)
+		 name
+		 (cadr name))))
+	`(define-syntax ,(string->symbol sname)
+	   (syntax-rules ()
+	     ((_ ,@tmps ,@(if rest (list rtmp '...) '()))
+	      (%inline 
+	       ,sname
+	       ,@wraps
+	       ,@(cond ((eq? #t rest) (list rtmp '...))
+		       (rest (list rest '...))
+		       (else '()))))))	  ))
+    (define (wrap type tmp)
+      (case type
+	((number function object null undefined)
+	 `(%check ,(symbol->string type) ,tmp))
+	((string)
+	 `(%string->jstring ,tmp))
+	(else
+	 (if (pair? type)
+	     (wrap-vector type tmp)
+	     tmp))))
+    (define (wrap-vector tl tmp)
+      (let loop ((tl tl) (cs '()) (f #f) (i 0))
+	(match tl
+	  (()
+	   (if f 
+	       `(vector ,@(reverse cs))
+	       tmp))
+	  ;;XXX currently not handled
+	  ((type (? (cut eq? '... <>)))
+	   (loop '() cs f i))
+	  (((? (cut eq? <> '...)))
+	   (if f
+	       `(%inline 
+		 ".concat" 
+		 `(vector ,(reverse cs))
+		 (%inline ".slice" ,tmp ,i))
+	       tmp))
+	  ((type . tl) 
+	   (let* ((wt `(vector-ref ,tmp ,i)) ;XXX nested access will be inefficient
+		  (w (wrap type wt)))
+	     (loop tl (cons w cs) (not (equal? w wt)) (+ i 1)))))))
+    (let loop ((tl tl) (wraps '()) (tmps '()))
+      ;; (write tl (current-error-port))
       (match tl
-	(()
-	 (if f 
-	     `(vector ,@(reverse cs))
-	     tmp))
-	;;XXX currently not handled
-	((type (? (cut eq? '... <>)))
-	 (loop '() cs f i))
+	(() (finish (reverse wraps) (reverse tmps) #f #f)) ; fixed
 	(((? (cut eq? <> '...)))
-	 (if f
-	     `(%inline 
-	       ".concat" 
-	       `(vector ,(reverse cs))
-	       (%inline ".slice" ,tmp ,i))
-	     tmp))
-	((type . tl) 
-	 (let* ((wt `(vector-ref ,tmp ,i)) ;XXX nested access will be inefficient
-		(w (wrap type wt)))
-	   (loop tl (cons w cs) (not (equal? w wt)) (+ i 1)))))))
-  (let loop ((tl tl) (wraps '()) (tmps '()))
-    (match tl
-      (() (finish (reverse wraps) (reverse tmps) #f #f)) ; fixed
-      (((? (cut eq? <> '...)))
-       (finish (reverse wraps) (reverse tmps) #t (temp))) ; N + rest
-      ((#(type))
-       (let ((tmp (temp)))
-	 (finish (reverse wraps) (reverse tmps) (wrap type tmp) tmp))) ; N + rest with type
-      ((type . tl)
-       (let ((tmp (temp)))
-	 (loop tl (cons (wrap type tmp) wraps) (cons tmp tmps)))))))
+	 (finish (reverse wraps) (reverse tmps) #t (temp))) ; N + rest
+	((#(type))
+	 (let ((tmp (temp)))
+	   (finish (reverse wraps) (reverse tmps) (wrap type tmp) tmp))) ; N + rest with type
+	((type . tl)
+	 (let ((tmp (temp)))
+	   (loop tl (cons (wrap type tmp) wraps) (cons tmp tmps))))))))
 		       
 (define (generate-variable-binding name type)
   (let ((sname (string->symbol name))

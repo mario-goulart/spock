@@ -210,12 +210,12 @@
 		 (for-each
 		  (lambda (file) (sexpand (read-forms file) #t))
 		  (reverse imports))
-		 (if prepare
-		     mstore
-		     (if output-file
-			 (with-output-to-file output-file
-			   (cut compile-files state files show))
-			 (compile-files state files show)))))
+		 (cond (prepare mstore)
+		       (output-file
+			(with-output-to-file output-file
+			  (cut compile-files state files show)))
+		       ((and (pair? bindings) (not code) (null? files)) #f)
+		       (else (compile-files state files show)))))
 	   (('help . _)
 	    (spock-help))
 	   (('output-file out . more)
